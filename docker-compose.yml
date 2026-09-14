@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: b2bshop
+      POSTGRES_USER: b2bshop
+      POSTGRES_PASSWORD: b2bshop_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U b2bshop"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=db;Database=b2bshop;Username=b2bshop;Password=b2bshop_dev"
+      Jwt__Secret: "training-secret-do-not-use-in-production-1234567890ab"
+      Jwt__Issuer: "b2bshop"
+      Jwt__Audience: "b2bshop-client"
+    ports:
+      - "5000:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.Worker
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db;Database=b2bshop;Username=b2bshop;Password=b2bshop_dev"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

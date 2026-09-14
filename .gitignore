@@ -1,0 +1,31 @@
+# Node
+node_modules/
+dist/
+.env
+.env.local
+*.log
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+*.suo
+*.DS_Store
+appsettings.Development.json
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+postgres_data/
+
+# IDE
+.idea/
+.vscode/settings.json
+
+# SDLC tooling
+.ai-run/
+docs/superpowers/
+.claude/
+.codemie/

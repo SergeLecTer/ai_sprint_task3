@@ -1,0 +1,29 @@
+# B2BShop Worker — multi-stage build
+# Build context: ./backend (from docker-compose)
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# Copy project files first for better layer caching
+COPY src/B2BShop.Domain/B2BShop.Domain.csproj              src/B2BShop.Domain/
+COPY src/B2BShop.Application/B2BShop.Application.csproj     src/B2BShop.Application/
+COPY src/B2BShop.Infrastructure/B2BShop.Infrastructure.csproj src/B2BShop.Infrastructure/
+COPY src/B2BShop.Worker/B2BShop.Worker.csproj               src/B2BShop.Worker/
+
+RUN dotnet restore src/B2BShop.Worker/B2BShop.Worker.csproj
+
+COPY . .
+RUN dotnet publish src/B2BShop.Worker/B2BShop.Worker.csproj \
+    -c Release \
+    -o /app/publish \
+    --no-restore
+
+# ---- runtime stage ----
+FROM mcr.microsoft.com/dotnet/runtime:10.0 AS runtime
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+ENV DOTNET_ENVIRONMENT=Production
+
+ENTRYPOINT ["dotnet", "B2BShop.Worker.dll"]
