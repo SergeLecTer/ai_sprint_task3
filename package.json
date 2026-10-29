@@ -1,0 +1,17 @@
+{
+  "name": "b2bshop-api",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "dependencies": {
+    "@hono/node-server": "1.13.7",
+    "hono": "4.6.14",
+    "jose": "5.9.6",
+    "pg": "8.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "@types/pg": "8.11.10",
+    "typescript": "5.7.2"
+  }
+}

@@ -29,3 +29,5 @@ postgres_data/
 docs/superpowers/
 .claude/
 .codemie/
+.vercel
+.env*
